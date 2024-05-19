@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-project(raylib-game-template)
+project(conways-game)
 
 # Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -39,10 +39,10 @@ add_custom_command(
 target_link_libraries(${PROJECT_NAME} raylib)
 
 # Web Configurations
-if (${PLATFORM} STREQUAL "Web")
+#if (${PLATFORM} STREQUAL "Web")
     # Tell Emscripten to build an example.html file.
-    set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".html")
-endif()
+    #    set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".html")
+    #endif()
 
 # Checks if OSX and links appropriate frameworks (Only required on MacOS)
 if (APPLE)
