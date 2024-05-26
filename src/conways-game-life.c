@@ -14,6 +14,7 @@
 ********************************************************************************************/
 
 #include "raylib.h"
+#include "dependencies/log.h"
 
 #include <math.h>
 #include <time.h>
@@ -28,8 +29,8 @@
 #define CELL_NUMX 80
 #define CELL_NUMY 50
 #define CELL_NUM  CELL_NUMX * CELL_NUMY
-#define SIZE_X 80/WIDTH
-#define SIZE_Y 50/HEIGHT
+#define SIZE_X WIDTH/80
+#define SIZE_Y HEIGHT/50
 //------------------------------------------------------------------------------------
 // Global Variables Declaration
 //------------------------------------------------------------------------------------
@@ -39,6 +40,9 @@ static const int screenHeight = 500;
 static bool pause = false;
 static bool gameOver = false;
 
+static int xPos;
+static int yPos;
+
 // Numero de celulas en eje X y eje Y.
 //const int cellsX = CELL_NUM/screenWidth;
 //const int cellsY = CELL_NUM/screenHeight;
@@ -47,13 +51,13 @@ static bool gameOver = false;
 //----------------------------------------------------------------------------------
 typedef struct Cell {
   bool alive;
-  Vector2 position;  // Position relative to the cell grid.
+  Rectangle cellbody;  // 4 float values [16 bytes]. Each Rectangle is Rectangle(posx, posy, posx+SIZE_X, posy+SIZE_Y)
 } Cell;
 
-// Necesito estructura para almacenar cada celda existente en el tablero, muerta
-// o no. Y con eso tal vez TODO deprecar los dos arrays de bool. Porque Cell ya
-// tiene dentro un bool para alive.
-Vector2 totalCells[CELL_NUM] = {0};
+// Necesito estructura para almacenar cada celda viva en el tablero.
+// Solo tengo que usar un algoritmo para calcular la posicion en x e y a partir de una celda.
+// Este vector contendra solo las celdas vivas, en concreto, sus posiciones.
+Cell totalCells[CELL_NUM] = {0};
 bool currGen [CELL_NUMX][CELL_NUMY] = {0};
 bool prevGen [CELL_NUMX][CELL_NUMY] = {0};
 
@@ -66,8 +70,11 @@ static void UnloadGame(void);       // Unload game
 //------------------------------------------------------------------------------------
 // Auxiliary functions
 //------------------------------------------------------------------------------------
+
 // It knows the size of array. No need to pass it.
 void initializeGenerations(void) {
+  log_trace("INITIALIZE Generations");
+  bool prevVal = false;
   // Initialize random number generator
   srand(time(NULL));
   // Initialize currGen
@@ -76,26 +83,42 @@ void initializeGenerations(void) {
       // TODO generate random number in [0,1]
       double rnd = ((double)rand()/((double)RAND_MAX + 1.0));
       // Do the clipping.
-      bool val = (rnd <= 0.5) ? true : false;
+      bool val = (rnd <= 0.8) ? true : false;
+      // TODO hopefully it will produce more Live Cells.
       currGen[i][j] = val;
       prevGen[i][j] = val;
+      totalCells[i+j].alive = val;
+      totalCells[i+j].cellbody.x = i*10;
+      totalCells[i+j].cellbody.y = j*10;
+      totalCells[i+j].cellbody.height = SIZE_Y;
+      totalCells[i+j].cellbody.width = SIZE_X;
     }
   }
+  log_trace("INITIALIZE Generations: ENDED");
 }
 
-void initPositionCells (struct Cell* cell) {
-}
-//
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
 
+// TODO idea: checkCellLife comprueba cada celula en prevGen.
+// Determina cual ha de vivir y cual no.
+// \returns Lista de celulas a dibujar: position y size.
+// De esa forma, solo pasamos la lista de elementos a pintar, con su posicion
+// y tamanos ya definidos.
+///////////////////////////////////////////
 // Checks the surrounding cells to determine if they are alive or not.
 // Puts the result in a boolean 3x3 matrix. i=j is the cell to check.
-void checkCellLife(int posx, int posy) {
+bool checkCellLife(int posx, int posy) {
+  bool isAlive = false;
   int countAliveCells = 0;
   // Fill the value from prevGeneration.
   for(int i = -1; i <= 1; ++i) {
-      if ((posx+i >= 0) && prevGen[posx+i]) ++countAliveCells;
+    for (int j = -1; j <= 1; ++j) {
+      // TODO edge cases like the cell at the right border.
+      if ((posx+i >= 0 && (posx+i) < WIDTH) && (posy+j >= 0 && (posy+j) < HEIGHT) && prevGen[posx+i][posy+j]) {
+        ++countAliveCells;
+      }
+    }
   }
 
   // Check if the cell in posx, posy is alive or dead.
@@ -104,20 +127,21 @@ void checkCellLife(int posx, int posy) {
   if (currCellAlive) {
     if (countAliveCells < 2 || countAliveCells > 3) {
       currGen[posx][posy] = false;
+      isAlive = false;
     } else {
       currGen[posx][posy] = true;
+      isAlive = true;
     }
   } else {
     // Cell is dead, if exactly 3 cells alive around, reborn.
     if (countAliveCells == 3) {
       currGen[posx][posy] = true;
+      isAlive = true;
     }
   }
+  return isAlive;
 }
 
-void checkCellsLife(void){
-
-}
 //------------------------------------------------------------------------------------
 // Program main entry point
 //------------------------------------------------------------------------------------
@@ -128,6 +152,7 @@ int main(void)
     InitWindow(screenWidth, screenHeight, "Conwan\'s Game of Life");
 
     InitGame();
+    log_trace("Starting the show...");
 
 #if defined(PLATFORM_WEB)
     emscripten_set_main_loop(UpdateDrawFrame, 60, 1);
@@ -158,31 +183,33 @@ int main(void)
 void InitGame(void) {
     gameOver = false;
     pause = false;
+    xPos = screenWidth/2;
+    yPos = screenHeight/2;
     initializeGenerations();
-}
+    // TODO save the results to a text file to check if there is anything alive.
 
+}
 
 // Draw game (one frame)
 void DrawGame(void)
 {
     BeginDrawing();
         ClearBackground(RAYWHITE);
+        DrawText("WELCOMESOFTWARE GAMEDEVELOP", 10, 10, 10, GRAY);
+
         if (!gameOver)
         {
-          // Draw each square of current cells
-          // Go through each element of currGen[i][j] and its value determines
-          // if it needs to be drawn.
-          // TODO this is horrible code. I should write more clear one.
-          for(int cl = 0; cl < CELL_NUM; ++cl) {
-            for (int x = 0; x < CELL_NUMX; x++) {
-              for (int y = 0; y < CELL_NUMY; y++) {
-                // DrawRectangle(Vector2 position, Vector2 size, Color color)
-                if(currGen[x][y]) {
-                  DrawRectangle(totalCells[cl].x, totalCells[cl].y, x*SIZE_X, y*SIZE_Y, GREEN);
-                }
+					DrawRectangle(xPos, yPos, SIZE_X, SIZE_Y, RED);
+          for (int cl = 0; cl < CELL_NUMX; cl++) {
+            for (int i = 0; i < CELL_NUMX; i++) {
+              for (int j = 0; j < CELL_NUMY && cl < CELL_NUM; j++) {
+                DrawRectangle(i*10, j*10, SIZE_X, SIZE_Y, GREEN);
+                //log_trace("Print X: %d", i);
               }
             }
+            log_trace("Print cell #: %d", cl);
           }
+
         }
     EndDrawing();
 }
@@ -196,7 +223,20 @@ void UpdateGame(void) {
       if (!pause) {
         // Cell life logic: checks every cell and decide if they born, live,
         // die.
-        checkCellsLife();
+        if(IsKeyDown(KEY_UP)) {
+          --yPos; // TODO check when it is 0 or negative. Howe to wrap up the screen?
+        }
+        if(IsKeyDown(KEY_DOWN)) {
+          ++yPos;
+        }
+        if(IsKeyDown(KEY_LEFT)) {
+          --xPos;
+        }
+        if(IsKeyDown(KEY_RIGHT)) {
+          ++xPos;
+        }
+        // Precompute a list of Cells ready to paint.
+        //PrecomputeSquaresToDraw();
         DrawGame();
       }
     }
