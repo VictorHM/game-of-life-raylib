@@ -100,18 +100,12 @@ void initializeGenerations(void) {
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
 
-// TODO idea: checkCellLife comprueba cada celula en prevGen.
-// Determina cual ha de vivir y cual no.
-// \returns Lista de celulas a dibujar: position y size.
-// De esa forma, solo pasamos la lista de elementos a pintar, con su posicion
-// y tamanos ya definidos.
-///////////////////////////////////////////
 // Checks the surrounding cells to determine if they are alive or not.
 // Puts the result in a boolean 3x3 matrix. i=j is the cell to check.
 bool checkCellLife(int posx, int posy) {
   bool isAlive = false;
   int countAliveCells = 0;
-  // Fill the value from prevGeneration.
+  // Fill the value from prevGeneration. TODO check if this is correct or do we have to adjust with SIZE_X etc.
   for(int i = -1; i <= 1; ++i) {
     for (int j = -1; j <= 1; ++j) {
       // TODO edge cases like the cell at the right border.
@@ -140,6 +134,20 @@ bool checkCellLife(int posx, int posy) {
     }
   }
   return isAlive;
+}
+
+// TODO idea: checkCellLife comprueba cada celula en prevGen.
+// Determina cual ha de vivir y cual no.
+// \returns Lista de celulas a dibujar: position y size.
+// De esa forma, solo pasamos la lista de elementos a pintar, con su posicion
+// y tamanos ya definidos.
+///////////////////////////////////////////
+void evaluateContinuationOfLive(void) {
+  for(int i = 0; i < CELL_NUMX; ++i) {
+    for(int j = 0; j < CELL_NUMY; ++j) {
+      checkCellLife(i, j);
+    }
+  }
 }
 
 //------------------------------------------------------------------------------------
@@ -195,21 +203,23 @@ void DrawGame(void)
 {
     BeginDrawing();
         ClearBackground(RAYWHITE);
-        DrawText("WELCOMESOFTWARE GAMEDEVELOP", 10, 10, 10, GRAY);
+        DrawText("WELCOME SOFTWARE GAMEDEVELOP", 10, 10, 10, GRAY);
 
         if (!gameOver)
         {
-					DrawRectangle(xPos, yPos, SIZE_X, SIZE_Y, RED);
+					
           for (int cl = 0; cl < CELL_NUMX; cl++) {
             for (int i = 0; i < CELL_NUMX; i++) {
               for (int j = 0; j < CELL_NUMY && cl < CELL_NUM; j++) {
-                DrawRectangle(i*10, j*10, SIZE_X, SIZE_Y, GREEN);
+                // TODO this is the part where it checks if draw needs to be done.
+                if (currGen[i][j]){
+                  DrawRectangle(i*10, j*10, SIZE_X, SIZE_Y, GREEN);
                 //log_trace("Print X: %d", i);
+                }
               }
             }
-            log_trace("Print cell #: %d", cl);
+            DrawRectangle(xPos, yPos, SIZE_X, SIZE_Y, RED);
           }
-
         }
     EndDrawing();
 }
@@ -247,5 +257,5 @@ void UpdateDrawGame(void) {
 }
 
 void UnloadGame(void) {
-  // TODO
+    // TODO
 }
