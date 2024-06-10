@@ -26,11 +26,11 @@
 #define WIDTH 800
 #define HEIGHT 500
 
-#define CELL_NUMX 80
-#define CELL_NUMY 50
+#define CELL_NUMX 60
+#define CELL_NUMY 40
 #define CELL_NUM  CELL_NUMX * CELL_NUMY
-#define SIZE_X WIDTH/80
-#define SIZE_Y HEIGHT/50
+#define SIZE_X WIDTH/CELL_NUMX
+#define SIZE_Y HEIGHT/CELL_NUMY
 //------------------------------------------------------------------------------------
 // Global Variables Declaration
 //------------------------------------------------------------------------------------
@@ -42,6 +42,9 @@ static bool gameOver = false;
 
 static int xPos;
 static int yPos;
+
+static int cicles = 0;
+static int delta = 0.1f;
 
 // Numero de celulas en eje X y eje Y.
 //const int cellsX = CELL_NUM/screenWidth;
@@ -55,7 +58,8 @@ typedef struct Cell {
 } Cell;
 
 // Necesito estructura para almacenar cada celda viva en el tablero.
-// Solo tengo que usar un algoritmo para calcular la posicion en x e y a partir de una celda.
+// Solo tengo que usar un algoritmo para calcular la posicion en x e y a partir 
+// de una celda.
 // Este vector contendra solo las celdas vivas, en concreto, sus posiciones.
 Cell totalCells[CELL_NUM] = {0};
 bool currGen [CELL_NUMX][CELL_NUMY] = {0};
@@ -80,18 +84,17 @@ void initializeGenerations(void) {
   // Initialize currGen
   for(int i = 0; i < CELL_NUMX; ++i) {
     for(int j = 0; j < CELL_NUMY; ++j) {
-      // TODO generate random number in [0,1]
+      // generate random number in [0,1]
       double rnd = ((double)rand()/((double)RAND_MAX + 1.0));
-      // Do the clipping.
-      bool val = (rnd <= 0.8) ? true : false;
-      // TODO hopefully it will produce more Live Cells.
+      // Do the clipping to the alive/dead state.
+      bool val = (rnd <= 0.5) ? true : false;
       currGen[i][j] = val;
       prevGen[i][j] = val;
       totalCells[i+j].alive = val;
       totalCells[i+j].cellbody.x = i*10;
       totalCells[i+j].cellbody.y = j*10;
-      totalCells[i+j].cellbody.height = SIZE_Y;
-      totalCells[i+j].cellbody.width = SIZE_X;
+      totalCells[i+j].cellbody.height = SIZE_Y - delta;
+      totalCells[i+j].cellbody.width = SIZE_X - delta;
     }
   }
   log_trace("INITIALIZE Generations: ENDED");
@@ -105,11 +108,14 @@ void initializeGenerations(void) {
 bool checkCellLife(int posx, int posy) {
   bool isAlive = false;
   int countAliveCells = 0;
-  // Fill the value from prevGeneration. TODO check if this is correct or do we have to adjust with SIZE_X etc.
+  // Fill the value from prevGeneration. 
+  // TODO check if this is correct or do we have to adjust with SIZE_X etc.
+  // Check neightbours of the cell, so i, j go through the values -1, 0, -1
   for(int i = -1; i <= 1; ++i) {
     for (int j = -1; j <= 1; ++j) {
       // TODO edge cases like the cell at the right border.
-      if ((posx+i >= 0 && (posx+i) < WIDTH) && (posy+j >= 0 && (posy+j) < HEIGHT) && prevGen[posx+i][posy+j]) {
+      if ((posx+i*10 >= 0 && (posx+i) < WIDTH) && (posy+j*10 >= 0 && (posy+j) < HEIGHT) 
+          && prevGen[posx+i][posy+j]) {
         ++countAliveCells;
       }
     }
@@ -133,6 +139,8 @@ bool checkCellLife(int posx, int posy) {
       isAlive = true;
     }
   }
+  // Copy curr gen to prev gen so it will update every cycle.
+  prevGen[posx][posy] = currGen[posx][posy];
   return isAlive;
 }
 
@@ -173,6 +181,8 @@ int main(void)
     {
         // Update and Draw
         //----------------------------------------------------------------------------------
+        cicles++;
+        log_trace("Ciclo: %d", cicles);
         UpdateDrawGame();
         //----------------------------------------------------------------------------------
     }
@@ -203,7 +213,6 @@ void DrawGame(void)
 {
     BeginDrawing();
         ClearBackground(RAYWHITE);
-        DrawText("WELCOME SOFTWARE GAMEDEVELOP", 10, 10, 10, GRAY);
 
         if (!gameOver)
         {
@@ -213,12 +222,12 @@ void DrawGame(void)
               for (int j = 0; j < CELL_NUMY && cl < CELL_NUM; j++) {
                 // TODO this is the part where it checks if draw needs to be done.
                 if (currGen[i][j]){
-                  DrawRectangle(i*10, j*10, SIZE_X, SIZE_Y, GREEN);
-                //log_trace("Print X: %d", i);
+                  DrawRectangle(i*SIZE_X, j*SIZE_Y, SIZE_X-delta, SIZE_Y-delta, GREEN);
+                  log_trace("Print X: %d", i);
                 }
               }
             }
-            DrawRectangle(xPos, yPos, SIZE_X, SIZE_Y, RED);
+            //DrawRectangle(xPos, yPos, SIZE_X, SIZE_Y, RED);
           }
         }
     EndDrawing();
@@ -247,6 +256,9 @@ void UpdateGame(void) {
         }
         // Precompute a list of Cells ready to paint.
         //PrecomputeSquaresToDraw();
+        //if(IsKeyPressed(KEY_L)) {
+          evaluateContinuationOfLive();
+        //}
         DrawGame();
       }
     }
