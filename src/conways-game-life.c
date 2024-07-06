@@ -109,7 +109,9 @@ bool checkCellLife(int posx, int posy) {
   bool isAlive = false;
   int countAliveCells = 0;
   // Fill the value from prevGeneration. 
-  // TODO check if this is correct or do we have to adjust with SIZE_X etc.
+  
+  // TODO Aclarar pantalla y dibujar cada celda segun se comprueba. Asi puedo pdeterminar si la logica esta bien
+
   // Check neightbours of the cell, so i, j go through the values -1, 0, -1
   for(int i = -1; i <= 1; ++i) {
     for (int j = -1; j <= 1; ++j) {
@@ -216,18 +218,21 @@ void DrawGame(void)
 
         if (!gameOver)
         {
-					
+					int posX = 0;
+          int posY = 0;
           for (int cl = 0; cl < CELL_NUMX; cl++) {
             for (int i = 0; i < CELL_NUMX; i++) {
               for (int j = 0; j < CELL_NUMY && cl < CELL_NUM; j++) {
                 // TODO this is the part where it checks if draw needs to be done.
                 if (currGen[i][j]){
-                  DrawRectangle(i*SIZE_X, j*SIZE_Y, SIZE_X-delta, SIZE_Y-delta, GREEN);
+                  DrawRectangle(i*SIZE_X, j*SIZE_Y, SIZE_X-delta, SIZE_Y-delta, GREEN); // TODO esto es lo que esta mal! Hay que moverse varios pixels y no lo hace bien
                   log_trace("Print X: %d", i);
                 }
+                posY += SIZE_Y;
               }
             }
-            //DrawRectangle(xPos, yPos, SIZE_X, SIZE_Y, RED);
+            posX += SIZE_X;
+            // DrawRectangle(xPos, yPos, 2*SIZE_X, 2*SIZE_Y, RED);
           }
         }
     EndDrawing();
