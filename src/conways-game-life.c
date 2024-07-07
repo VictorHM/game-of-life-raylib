@@ -220,20 +220,20 @@ void DrawGame(void)
         {
 					int posX = 0;
           int posY = 0;
-          for (int cl = 0; cl < CELL_NUMX; cl++) {
-            for (int i = 0; i < CELL_NUMX; i++) {
-              for (int j = 0; j < CELL_NUMY && cl < CELL_NUM; j++) {
-                // TODO this is the part where it checks if draw needs to be done.
-                if (currGen[i][j]){
-                  DrawRectangle(i*SIZE_X, j*SIZE_Y, SIZE_X-delta, SIZE_Y-delta, GREEN); // TODO esto es lo que esta mal! Hay que moverse varios pixels y no lo hace bien
-                  log_trace("Print X: %d", i);
-                }
-                posY += SIZE_Y;
+          for (int i = 0; i < CELL_NUMX; i++) {
+            for (int j = 0; j < CELL_NUMY; j++) {
+              // TODO this is the part where it checks if draw needs to be done.
+              if (currGen[i][j]){
+                DrawRectangle(posX, posY, SIZE_X-delta, SIZE_Y-delta, GREEN); // TODO esto es lo que esta mal! Hay que moverse varios pixels y no lo hace bien
+                log_trace("Print X: %d", posX);
+                log_trace("/tPrint Y: %d", posY);
               }
+              posY += SIZE_Y;
             }
+            posY = 0;
             posX += SIZE_X;
-            // DrawRectangle(xPos, yPos, 2*SIZE_X, 2*SIZE_Y, RED);
-          }
+          }            
+          // DrawRectangle(xPos, yPos, 2*SIZE_X, 2*SIZE_Y, RED);
         }
     EndDrawing();
 }
@@ -261,9 +261,9 @@ void UpdateGame(void) {
         }
         // Precompute a list of Cells ready to paint.
         //PrecomputeSquaresToDraw();
-        //if(IsKeyPressed(KEY_L)) {
+        if(IsKeyPressed(KEY_L)) {
           evaluateContinuationOfLive();
-        //}
+        }
         DrawGame();
       }
     }
