@@ -129,7 +129,7 @@ void checkCellLife(int cellx, int celly) {
 // y tamanos ya definidos.
 ///////////////////////////////////////////
 void evaluateContinuationOfLive(void) {
-  if (cicles > 100) {
+  if (cicles > 50) {
     for(int i = 0; i < CELL_NUMX; ++i) {
       for(int j = 0; j < CELL_NUMY; ++j) {
         checkCellLife(i, j);
@@ -201,9 +201,8 @@ void DrawGame(void)
             // Check if the cell has to be drawn.
             if (currGen[i][j]){
               DrawRectangle(posX, posY, SIZE_X-delta, SIZE_Y-delta, GREEN); // TODO esto es lo que esta mal! Hay que moverse varios pixels y no lo hace bien
-              //log_trace("Print X: %d", posX);
-              //log_trace("/tPrint Y: %d", posY);
             }
+            DrawRectangleLines(posX, posY, SIZE_X, SIZE_Y, RED);
             posY += SIZE_Y;
           }
           posY = 0;
