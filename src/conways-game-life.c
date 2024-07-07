@@ -46,22 +46,9 @@ static int yPos;
 static int cicles = 0;
 static int delta = 0.1f;
 
-// Numero de celulas en eje X y eje Y.
-//const int cellsX = CELL_NUM/screenWidth;
-//const int cellsY = CELL_NUM/screenHeight;
 //----------------------------------------------------------------------------------
 // Types and Structures Definition
 //----------------------------------------------------------------------------------
-typedef struct Cell {
-  bool alive;
-  Rectangle cellbody;  // 4 float values [16 bytes]. Each Rectangle is Rectangle(posx, posy, posx+SIZE_X, posy+SIZE_Y)
-} Cell;
-
-// Necesito estructura para almacenar cada celda viva en el tablero.
-// Solo tengo que usar un algoritmo para calcular la posicion en x e y a partir 
-// de una celda.
-// Este vector contendra solo las celdas vivas, en concreto, sus posiciones.
-Cell totalCells[CELL_NUM] = {0};
 bool currGen [CELL_NUMX][CELL_NUMY] = {0};
 bool prevGen [CELL_NUMX][CELL_NUMY] = {0};
 
@@ -87,14 +74,9 @@ void initializeGenerations(void) {
       // generate random number in [0,1]
       double rnd = ((double)rand()/((double)RAND_MAX + 1.0));
       // Do the clipping to the alive/dead state.
-      bool val = (rnd <= 0.5) ? true : false;
+      bool val = (rnd <= 0.3) ? true : false;
       currGen[i][j] = val;
       prevGen[i][j] = val;
-      totalCells[i+j].alive = val;
-      totalCells[i+j].cellbody.x = i*10;
-      totalCells[i+j].cellbody.y = j*10;
-      totalCells[i+j].cellbody.height = SIZE_Y - delta;
-      totalCells[i+j].cellbody.width = SIZE_X - delta;
     }
   }
   log_trace("INITIALIZE Generations: ENDED");
@@ -104,46 +86,40 @@ void initializeGenerations(void) {
 //------------------------------------------------------------------------------------
 
 // Checks the surrounding cells to determine if they are alive or not.
-// Puts the result in a boolean 3x3 matrix. i=j is the cell to check.
-bool checkCellLife(int posx, int posy) {
-  bool isAlive = false;
+// Puts the result in a boolean 3x3 matrix. i,j is the cell to check.
+void checkCellLife(int cellx, int celly) {
   int countAliveCells = 0;
   // Fill the value from prevGeneration. 
-  
-  // TODO Aclarar pantalla y dibujar cada celda segun se comprueba. Asi puedo pdeterminar si la logica esta bien
-
   // Check neightbours of the cell, so i, j go through the values -1, 0, -1
   for(int i = -1; i <= 1; ++i) {
-    for (int j = -1; j <= 1; ++j) {
-      // TODO edge cases like the cell at the right border.
-      if ((posx+i*10 >= 0 && (posx+i) < WIDTH) && (posy+j*10 >= 0 && (posy+j) < HEIGHT) 
-          && prevGen[posx+i][posy+j]) {
-        ++countAliveCells;
+    // Avoid unnecesary calculations that may set wrong values in the gen arrays.
+    if (cellx+i >= 0 && (cellx+i) < CELL_NUMX) {
+      for (int j = -1; j <= 1; ++j) {
+        // Edge cases are taken into account in the conditions
+        if ((celly+j >= 0 && (celly+j) < CELL_NUMY) && prevGen[cellx+i][celly+j]) {
+          ++countAliveCells;
+        }
       }
     }
   }
 
-  // Check if the cell in posx, posy is alive or dead.
+  // Check if the cell in cellx, celly is alive or dead.
   // Apply rules based on that.
-  bool currCellAlive = prevGen[posx][posy];
+  bool currCellAlive = prevGen[cellx][celly];
   if (currCellAlive) {
     if (countAliveCells < 2 || countAliveCells > 3) {
-      currGen[posx][posy] = false;
-      isAlive = false;
+      currGen[cellx][celly] = false;
     } else {
-      currGen[posx][posy] = true;
-      isAlive = true;
+      currGen[cellx][celly] = true;
     }
   } else {
     // Cell is dead, if exactly 3 cells alive around, reborn.
     if (countAliveCells == 3) {
-      currGen[posx][posy] = true;
-      isAlive = true;
+      currGen[cellx][celly] = true;
     }
   }
   // Copy curr gen to prev gen so it will update every cycle.
-  prevGen[posx][posy] = currGen[posx][posy];
-  return isAlive;
+  prevGen[cellx][celly] = currGen[cellx][celly];
 }
 
 // TODO idea: checkCellLife comprueba cada celula en prevGen.
@@ -153,10 +129,13 @@ bool checkCellLife(int posx, int posy) {
 // y tamanos ya definidos.
 ///////////////////////////////////////////
 void evaluateContinuationOfLive(void) {
-  for(int i = 0; i < CELL_NUMX; ++i) {
-    for(int j = 0; j < CELL_NUMY; ++j) {
-      checkCellLife(i, j);
+  if (cicles > 100) {
+    for(int i = 0; i < CELL_NUMX; ++i) {
+      for(int j = 0; j < CELL_NUMY; ++j) {
+        checkCellLife(i, j);
+      }
     }
+    cicles = 0;
   }
 }
 
@@ -175,7 +154,7 @@ int main(void)
 #if defined(PLATFORM_WEB)
     emscripten_set_main_loop(UpdateDrawFrame, 60, 1);
 #else
-    SetTargetFPS(60);
+    SetTargetFPS(30);
     //--------------------------------------------------------------------------------------
 
     // Main game loop
@@ -206,36 +185,33 @@ void InitGame(void) {
     xPos = screenWidth/2;
     yPos = screenHeight/2;
     initializeGenerations();
-    // TODO save the results to a text file to check if there is anything alive.
-
 }
 
 // Draw game (one frame)
 void DrawGame(void)
 {
-    BeginDrawing();
-        ClearBackground(RAYWHITE);
-
-        if (!gameOver)
-        {
-					int posX = 0;
-          int posY = 0;
-          for (int i = 0; i < CELL_NUMX; i++) {
-            for (int j = 0; j < CELL_NUMY; j++) {
-              // TODO this is the part where it checks if draw needs to be done.
-              if (currGen[i][j]){
-                DrawRectangle(posX, posY, SIZE_X-delta, SIZE_Y-delta, GREEN); // TODO esto es lo que esta mal! Hay que moverse varios pixels y no lo hace bien
-                log_trace("Print X: %d", posX);
-                log_trace("/tPrint Y: %d", posY);
-              }
-              posY += SIZE_Y;
+  BeginDrawing();
+      ClearBackground(WHITE);
+      if (!gameOver)
+      {
+				int posX = 0;
+        int posY = 0;
+        for (int i = 0; i < CELL_NUMX; i++) {
+          for (int j = 0; j < CELL_NUMY; j++) {
+            // Check if the cell has to be drawn.
+            if (currGen[i][j]){
+              DrawRectangle(posX, posY, SIZE_X-delta, SIZE_Y-delta, GREEN); // TODO esto es lo que esta mal! Hay que moverse varios pixels y no lo hace bien
+              //log_trace("Print X: %d", posX);
+              //log_trace("/tPrint Y: %d", posY);
             }
-            posY = 0;
-            posX += SIZE_X;
-          }            
-          // DrawRectangle(xPos, yPos, 2*SIZE_X, 2*SIZE_Y, RED);
-        }
-    EndDrawing();
+            posY += SIZE_Y;
+          }
+          posY = 0;
+          posX += SIZE_X;
+        }            
+        // DrawRectangle(xPos, yPos, 2*SIZE_X, 2*SIZE_Y, RED);
+      }
+  EndDrawing();
 }
 
 // Update the game, one frame at a time
@@ -261,10 +237,11 @@ void UpdateGame(void) {
         }
         // Precompute a list of Cells ready to paint.
         //PrecomputeSquaresToDraw();
-        if(IsKeyPressed(KEY_L)) {
-          evaluateContinuationOfLive();
-        }
-        DrawGame();
+        //if(IsKeyPressed(KEY_L)) {
+        //  evaluateContinuationOfLive();          
+        //}
+        evaluateContinuationOfLive();
+        DrawGame();        
       }
     }
 }
