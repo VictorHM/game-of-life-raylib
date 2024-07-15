@@ -96,8 +96,10 @@ void checkCellLife(int cellx, int celly) {
     if (cellx+i >= 0 && (cellx+i) < CELL_NUMX) {
       for (int j = -1; j <= 1; ++j) {
         // Edge cases are taken into account in the conditions
-        if ((celly+j >= 0 && (celly+j) < CELL_NUMY) && prevGen[cellx+i][celly+j]) {
-          ++countAliveCells;
+        if (i != 0 && j != 0) { 
+          if (((celly+j) >= 0 && (celly+j) < CELL_NUMY) && prevGen[cellx+i][celly+j]) {
+            ++countAliveCells;
+          }
         }
       }
     }
