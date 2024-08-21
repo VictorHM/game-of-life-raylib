@@ -26,8 +26,8 @@
 #define WIDTH 800
 #define HEIGHT 500
 
-#define CELL_NUMX 60
-#define CELL_NUMY 40
+#define CELL_NUMX 50
+#define CELL_NUMY 30
 #define CELL_NUM  CELL_NUMX * CELL_NUMY
 #define SIZE_X WIDTH/CELL_NUMX
 #define SIZE_Y HEIGHT/CELL_NUMY
@@ -95,7 +95,7 @@ void checkCellLife(int cellx, int celly) {
     // Avoid unnecesary calculations that may set wrong values in the gen arrays.
     if (cellx+i >= 0 && (cellx+i) < CELL_NUMX) {
       for (int j = -1; j <= 1; ++j) {
-        // Edge cases are taken into account in the conditions
+        // TODO IT IS NOT TAKEN INTO ACCOUNBT Edge cases are taken into account in the conditions
         // TODO celulas adjacentes quiza sean solo a iz, der, arr, abj. No
         // diagonales.
         if ((i == 0 && j != 0) || (i != 0 && j == 0)) { 
@@ -123,7 +123,19 @@ void checkCellLife(int cellx, int celly) {
     }
   }
   // Copy curr gen to prev gen so it will update every cycle.
-  prevGen[cellx][celly] = currGen[cellx][celly];
+}
+
+int copyCurrGenToPrev() {
+  // Copy arrays to keep updated. Doing it in checkLifeCells breaks logic.
+  // TODO contar celulas vivas en cada iteraccion
+  int aliveCells = 0;
+  for (int i = 0; i < CELL_NUMX; ++i) {
+    for (int j = 0; j < CELL_NUMY; ++j) {
+      if (currGen[i][j]) ++aliveCells;
+      prevGen[i][j] = currGen[i][j];
+    }
+  }
+  return aliveCells;
 }
 
 // TODO idea: checkCellLife comprueba cada celula en prevGen.
@@ -139,6 +151,8 @@ void evaluateContinuationOfLive(void) {
         checkCellLife(i, j);
       }
     }
+    int alives = copyCurrGenToPrev();
+    log_trace("Cells Vivas: %d", alives); 
     cicles = 0;
   }
 }
@@ -212,7 +226,7 @@ void DrawGame(void)
           posY = 0;
           posX += SIZE_X;
         }            
-        // DrawRectangle(xPos, yPos, 2*SIZE_X, 2*SIZE_Y, RED);
+        DrawRectangle(xPos, yPos, 2*SIZE_X, 2*SIZE_Y, RED);
       }
   EndDrawing();
 }
@@ -227,6 +241,7 @@ void UpdateGame(void) {
         // Cell life logic: checks every cell and decide if they born, live,
         // die.
         if(IsKeyDown(KEY_UP)) {
+          // TODO add visual info on the screen
           --yPos; // TODO check when it is 0 or negative. Howe to wrap up the screen?
         }
         if(IsKeyDown(KEY_DOWN)) {
@@ -245,6 +260,12 @@ void UpdateGame(void) {
         //}
         evaluateContinuationOfLive();
         DrawGame();        
+      } else {
+        // We are in pause. If 'N' is pressed, advance one frame
+        if (IsKeyPressed('N')) {
+          evaluateContinuationOfLive();
+          DrawGame();        
+        }
       }
     }
 }
