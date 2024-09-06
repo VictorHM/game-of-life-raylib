@@ -31,13 +31,14 @@ Sound fxCoin = { 0 };
 //----------------------------------------------------------------------------------
 // Local Variables Definition (local to this module)
 //----------------------------------------------------------------------------------
-static const int screenWidth = 800;
-static const int screenHeight = 450;
+static const int screenWidth = WIDTH;
+static const int screenHeight = HEIGHT;
 
 // Required variables to manage screen transitions (fade-in, fade-out)
 static float transAlpha = 0.0f;
 static bool onTransition = false;
 static bool transFadeOut = false;
+static bool pause = false;
 static int transFromScreen = -1;
 static GameScreen transToScreen = UNKNOWN;
 
@@ -57,9 +58,10 @@ static void UpdateDrawFrame(void);          // Update and draw one frame
 //----------------------------------------------------------------------------------
 int main(void)
 {
+    SetTraceLogLevel(LOG_DEBUG);
     // Initialization
     //---------------------------------------------------------
-    InitWindow(screenWidth, screenHeight, "raylib game template");
+    InitWindow(screenWidth, screenHeight, "Game of Life with Raylib");
 
     InitAudioDevice();      // Initialize audio device
 
@@ -84,6 +86,10 @@ int main(void)
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
+        if (IsKeyPressed('P')) { 
+          pause = !pause;
+          TraceLog(LOG_DEBUG, "Pausa toggleada");
+        }
         UpdateDrawFrame();
     }
 #endif
@@ -248,7 +254,7 @@ static void UpdateDrawFrame(void)
             } break;
             case GAMEPLAY:
             {
-                UpdateGameplayScreen();
+                if(!pause) UpdateGameplayScreen();
 
                 if (FinishGameplayScreen() == 1) TransitionToScreen(ENDING);
                 //else if (FinishGameplayScreen() == 2) TransitionToScreen(TITLE);

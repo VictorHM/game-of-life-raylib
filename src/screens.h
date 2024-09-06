@@ -27,6 +27,18 @@
 #define SCREENS_H
 
 //----------------------------------------------------------------------------------
+// Some Custom Defines
+//----------------------------------------------------------------------------------
+#define WIDTH 800
+#define HEIGHT 500
+
+#define CELL_NUMX 50
+#define CELL_NUMY 30
+#define CELL_NUM  CELL_NUMX * CELL_NUMY
+#define SIZE_X WIDTH/CELL_NUMX
+#define SIZE_Y HEIGHT/CELL_NUMY
+
+//----------------------------------------------------------------------------------
 // Types and Structures Definition
 //----------------------------------------------------------------------------------
 typedef enum GameScreen { UNKNOWN = -1, LOGO = 0, TITLE, OPTIONS, GAMEPLAY, ENDING } GameScreen;
