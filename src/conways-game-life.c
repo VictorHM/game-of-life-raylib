@@ -56,7 +56,7 @@ bool prevGen [CELL_NUMX][CELL_NUMY] = {0};
 // Module Functions Declaration (local)
 //------------------------------------------------------------------------------------
 static void InitGame(void);         // Initialize game
-static void UpdateDrawGame(void);       // Update game (one frame)
+static void UpdateGame(void);       // Update game (one frame)
 static void UnloadGame(void);       // Unload game
 //------------------------------------------------------------------------------------
 // Auxiliary functions
@@ -72,9 +72,7 @@ void initializeGenerations(void) {
   for(int i = 0; i < CELL_NUMX; ++i) {
     for(int j = 0; j < CELL_NUMY; ++j) {
       // generate random number in [0,1]
-      double rnd = ((double)rand()/((double)RAND_MAX + 1.0));
-      // Do the clipping to the alive/dead state.
-      bool val = (rnd <= 0.3) ? true : false;
+      bool val = rand() % 2;
       currGen[i][j] = val;
       prevGen[i][j] = val;
     }
@@ -181,9 +179,12 @@ int main(void)
         // Update and Draw
         //----------------------------------------------------------------------------------
         cicles++;
-        log_trace("Ciclo: %d", cicles);
-        UpdateDrawGame();
-        //----------------------------------------------------------------------------------
+        if (IsKeyPressed('P')) { 
+          pause = !pause;
+          log_trace("Pausa toggleada: %d", pause);
+        }
+        //log_trace("Ciclo: %d", cicles);
+        UpdateGame();
     }
 #endif
     // De-Initialization
@@ -210,10 +211,14 @@ void DrawGame(void)
 {
   BeginDrawing();
       ClearBackground(WHITE);
+      if (pause) { DrawText("GAME PAUSED", screenWidth/2 - MeasureText("GAME PAUSED",40), screenHeight/2 - 40, 40, GRAY); }
       if (!gameOver)
       {
 				int posX = 0;
         int posY = 0;
+        // TODO this could be split in several parallel processing. Each row,
+        // each cell, is independent of any other at this point (the state has
+        // been already calculated).
         for (int i = 0; i < CELL_NUMX; i++) {
           for (int j = 0; j < CELL_NUMY; j++) {
             // Check if the cell has to be drawn.
@@ -234,7 +239,7 @@ void DrawGame(void)
 // Update the game, one frame at a time
 void UpdateGame(void) {
     if(!gameOver) {
-      if (IsKeyPressed('P')) pause = !pause;
+      // TODO it seems that it enters here twice, so it works wrong.
       if (IsKeyPressed(KEY_ESCAPE)) gameOver = true;
 
       if (!pause) {
@@ -258,20 +263,10 @@ void UpdateGame(void) {
         //if(IsKeyPressed(KEY_L)) {
         //  evaluateContinuationOfLive();          
         //}
-        evaluateContinuationOfLive();
+        if(!pause){ evaluateContinuationOfLive();}
         DrawGame();        
-      } else {
-        // We are in pause. If 'N' is pressed, advance one frame
-        if (IsKeyPressed('N')) {
-          evaluateContinuationOfLive();
-          DrawGame();        
-        }
       }
     }
-}
-
-void UpdateDrawGame(void) {
-  UpdateGame();
 }
 
 void UnloadGame(void) {
