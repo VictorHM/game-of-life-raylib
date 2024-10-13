@@ -121,15 +121,18 @@ int copyCurrGenToPrev() {
 // Gameplay Screen Update logic
 void UpdateGameplayScreen(void)
 {
-    // Update life state for each CELL
-    for (int x = 0; x < CELL_NUMX; ++x) {
-      for (int y = 0; y < CELL_NUMY; ++y) {
-        CheckCellLife(x, y);
-      }
+    if (cicles >= 50) {
+        // Update life state for each CELL
+        for (int x = 0; x < CELL_NUMX; ++x) {
+          for (int y = 0; y < CELL_NUMY; ++y) {
+            CheckCellLife(x, y);
+          }
+        }
+        int alives = copyCurrGenToPrev();
+        // TODO include log.h library to have logging.
+        TraceLog(LOG_DEBUG, "Cells Vivas: %d", alives);
+        cicles = 0;
     }
-    int alives = copyCurrGenToPrev();
-    // TODO include log.h library to have logging.
-    TraceLog(LOG_DEBUG, "Cells Vivas: %d", alives);
 
     // Press enter or tap to change to ENDING screen
     if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
@@ -137,6 +140,7 @@ void UpdateGameplayScreen(void)
         finishScreen = 1;
         PlaySound(fxCoin);
     }
+    cicles++;
 }
 
 // Gameplay Screen Draw logic
