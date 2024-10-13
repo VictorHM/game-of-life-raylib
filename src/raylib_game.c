@@ -91,6 +91,7 @@ int main(void)
           TraceLog(LOG_DEBUG, "Pausa toggleada");
         }
         UpdateDrawFrame();
+        TraceLog(LOG_DEBUG, "Pantalla actual: %d", currentScreen);
     }
 #endif
 
@@ -128,6 +129,7 @@ static void ChangeToScreen(GameScreen screen)
     // Unload current screen
     switch (currentScreen)
     {
+        
         case LOGO: UnloadLogoScreen(); break;
         case TITLE: UnloadTitleScreen(); break;
         case GAMEPLAY: UnloadGameplayScreen(); break;
@@ -138,6 +140,7 @@ static void ChangeToScreen(GameScreen screen)
     // Init next screen
     switch (screen)
     {
+        
         case LOGO: InitLogoScreen(); break;
         case TITLE: InitTitleScreen(); break;
         case GAMEPLAY: InitGameplayScreen(); break;
@@ -241,8 +244,8 @@ static void UpdateDrawFrame(void)
             {
                 UpdateTitleScreen();
 
-                if (FinishTitleScreen() == 1) TransitionToScreen(OPTIONS);
-                else if (FinishTitleScreen() == 2) TransitionToScreen(GAMEPLAY);
+                if (FinishTitleScreen() == 1) TransitionToScreen(GAMEPLAY);
+                else if (FinishTitleScreen() == 2) TransitionToScreen(OPTIONS);
 
             } break;
             case OPTIONS:
@@ -281,6 +284,7 @@ static void UpdateDrawFrame(void)
 
         switch(currentScreen)
         {
+          TraceLog(LOG_DEBUG, "Cambiamos a pantalla %d", currentScreen);
             case LOGO: DrawLogoScreen(); break;
             case TITLE: DrawTitleScreen(); break;
             case OPTIONS: DrawOptionsScreen(); break;

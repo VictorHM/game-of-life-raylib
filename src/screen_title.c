@@ -48,12 +48,13 @@ void InitTitleScreen(void)
 void UpdateTitleScreen(void)
 {
     // TODO: Update TITLE screen variables here!
-
     // Press enter or tap to change to GAMEPLAY screen
-    if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
+    if (IsKeyPressed(KEY_ONE))
     {
-        //finishScreen = 1;   // OPTIONS
-        finishScreen = 2;   // GAMEPLAY
+        finishScreen = 1;   // Gameplay
+        PlaySound(fxCoin);
+    } else if (IsKeyPressed(KEY_TWO)) {
+        finishScreen = 2;   // Opciones
         PlaySound(fxCoin);
     }
 }
@@ -63,9 +64,10 @@ void DrawTitleScreen(void)
 {
     // TODO: Draw TITLE screen here!
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), GREEN);
-    Vector2 pos = { 20, 10 };
-    DrawTextEx(font, "TITLE SCREEN", pos, font.baseSize*3.0f, 4, DARKGREEN);
-    DrawText("PRESS ENTER or TAP to JUMP to GAMEPLAY SCREEN", 120, 220, 20, DARKGREEN);
+    Vector2 pos = { 50, 30 };
+    DrawTextEx(font, "CONWAY'S GAME OF LIFE'", pos, font.baseSize*3.0f, 4, DARKGREEN);
+    DrawText("1. COMENZAR SIMULACION", 120, 220, 15, DARKGREEN);
+    DrawText("2. CARGAR O CREAR CONFIGURACION INICIAL", 120, 250, 15, DARKGREEN);
 }
 
 // Title Screen Unload logic

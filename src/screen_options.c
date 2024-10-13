@@ -32,10 +32,6 @@
 static int framesCounter = 0;
 static int finishScreen = 0;
 
-//----------------------------------------------------------------------------------
-// Options Screen Functions Definition
-//----------------------------------------------------------------------------------
-
 // Options Screen Initialization logic
 void InitOptionsScreen(void)
 {
@@ -54,14 +50,17 @@ void UpdateOptionsScreen(void)
 void DrawOptionsScreen(void)
 {
     // TODO: Draw OPTIONS screen here!
+    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), GRAY);
+    Vector2 pos = { 50, 30 };
+    DrawTextEx(font, "CONWAY'S GAME OF LIFE", pos, font.baseSize*3.0f, 4, GREEN);
+    DrawText("1. CARGAR CONFIGURACION", 120, 220, 15, GREEN); DrawText("2. CARGAR O CREAR CONFIGURACION INICIAL", 120, 250, 15, GREEN);
 }
 
-// Options Screen Unload logic
+// Options Screen Unload logic 
 void UnloadOptionsScreen(void)
 {
     // TODO: Unload OPTIONS screen variables here!
 }
-
 // Options Screen should finish?
 int FinishOptionsScreen(void)
 {
