@@ -66,7 +66,7 @@ int main(void)
     InitAudioDevice();      // Initialize audio device
 
     // Load global data (assets that must be available in all screens, i.e. font)
-    font = LoadFont("resources/mecha.png");
+    font = LoadFont("resources/Crang.ttf");
     music = LoadMusicStream("resources/ambient.ogg");
     fxCoin = LoadSound("resources/coin.wav");
 
@@ -91,7 +91,7 @@ int main(void)
           TraceLog(LOG_DEBUG, "Pausa toggleada");
         }
         UpdateDrawFrame();
-        TraceLog(LOG_DEBUG, "Pantalla actual: %d", currentScreen);
+        //TraceLog(LOG_DEBUG, "Pantalla actual: %d", currentScreen);
     }
 #endif
 
@@ -251,8 +251,10 @@ static void UpdateDrawFrame(void)
             case OPTIONS:
             {
                 UpdateOptionsScreen();
+                int finishVal = FinishGameplayScreen();
+                //TraceLog(LOG_DEBUG, "Valor devuelto finish*Screen %d", finishVal);
 
-                if (FinishOptionsScreen()) TransitionToScreen(TITLE);
+                if (FinishOptionsScreen() == 3) TransitionToScreen(TITLE);
 
             } break;
             case GAMEPLAY:

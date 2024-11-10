@@ -65,9 +65,11 @@ void DrawTitleScreen(void)
     // TODO: Draw TITLE screen here!
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), GREEN);
     Vector2 pos = { 50, 30 };
-    DrawTextEx(font, "CONWAY'S GAME OF LIFE'", pos, font.baseSize*3.0f, 4, DARKGREEN);
-    DrawText("1. COMENZAR SIMULACION", 120, 220, 15, DARKGREEN);
-    DrawText("2. CARGAR O CREAR CONFIGURACION INICIAL", 120, 250, 15, DARKGREEN);
+    DrawTextEx(font, "CONWAY'S GAME OF LIFE'", pos, font.baseSize, 4, DARKGREEN);
+    pos.y = pos.y + 150;
+    DrawTextEx(font, "1. COMENZAR SIMULACION", pos, font.baseSize * 0.5, 2, DARKGREEN);
+    pos.y = pos.y + 50;
+    DrawTextEx(font, "2. CARGAR O CREAR CONFIGURACION INICIAL", pos, font.baseSize * 0.5, 2, DARKGREEN);
 }
 
 // Title Screen Unload logic

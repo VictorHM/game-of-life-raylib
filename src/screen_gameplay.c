@@ -49,7 +49,9 @@ static bool prevGen [CELL_NUMX][CELL_NUMY] = {0};
 // Gameplay Screen Initialization logic
 void InitGameplayScreen(void)
 {
-    // TODO: Initialize GAMEPLAY screen variables here!
+    //if (isLoaded) {
+    //  // TODO load the csv data here.
+    //}
     framesCounter = 0;
     finishScreen = 0;
     TraceLog(LOG_DEBUG, "INITIALIZE Generations");
@@ -62,6 +64,7 @@ void InitGameplayScreen(void)
         // generate random number in [0,1]
         currGen[i][j] = rand() % 2;
         prevGen[i][j] = rand() % 2;
+        TraceLog(LOG_DEBUG, "Value: %d, X: %d, Y: %d", currGen[i][j], i, j);
       }
     }
     TraceLog(LOG_DEBUG, "INITIALIZE Generations: ENDED");
