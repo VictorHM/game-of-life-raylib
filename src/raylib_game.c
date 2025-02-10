@@ -39,6 +39,7 @@ static float transAlpha = 0.0f;
 static bool onTransition = false;
 static bool transFadeOut = false;
 static bool pause = false;
+static float soundVol = 1.0f;
 static int transFromScreen = -1;
 static GameScreen transToScreen = UNKNOWN;
 
@@ -70,7 +71,7 @@ int main(void)
     music = LoadMusicStream("resources/ambient.ogg");
     fxCoin = LoadSound("resources/coin.wav");
 
-    SetMusicVolume(music, 1.0f);
+    SetMusicVolume(music, soundVol);
     PlayMusicStream(music);
 
     // Setup and init first screen
@@ -88,10 +89,15 @@ int main(void)
     {
         if (IsKeyPressed('P')) { 
           pause = !pause;
-          TraceLog(LOG_DEBUG, "Pausa toggleada");
+          if(pause) {
+            TraceLog(LOG_DEBUG, "Pausado");
+            PauseMusicStream(music);
+          } else {
+            ResumeMusicStream(music);
+            TraceLog(LOG_DEBUG, "Reanudado");
+          }
         }
         UpdateDrawFrame();
-        //TraceLog(LOG_DEBUG, "Pantalla actual: %d", currentScreen);
     }
 #endif
 
@@ -286,7 +292,6 @@ static void UpdateDrawFrame(void)
 
         switch(currentScreen)
         {
-          TraceLog(LOG_DEBUG, "Cambiamos a pantalla %d", currentScreen);
             case LOGO: DrawLogoScreen(); break;
             case TITLE: DrawTitleScreen(); break;
             case OPTIONS: DrawOptionsScreen(); break;
