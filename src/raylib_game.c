@@ -263,7 +263,6 @@ static void UpdateDrawFrame(void)
             case OPTIONS:
             {
                 UpdateOptionsScreen();
-                //int finishVal = FinishGameplayScreen();
                 if (FinishOptionsScreen() == 3) TransitionToScreen(TITLE);
 
             } break;
