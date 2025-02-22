@@ -29,7 +29,7 @@
 #include <stdlib.h>
 
 
-#define TESTING
+//#define TESTING
 //----------------------------------------------------------------------------------
 // Module Variables Definition (local)
 //----------------------------------------------------------------------------------
@@ -94,43 +94,6 @@ void InitGameplayScreen(void)
     TraceLog(LOG_DEBUG, "INITIALIZE Generations: ENDED");
 }
 
-// Checks the surrounding cells to determine if they are alive or not.
-/* void CheckCellLife(int cellx, int celly) {
-  int countAliveCells = 0;
-  // Fill the value from prevGeneration. 
-  // Check neightbours of the cell, so i, j go through the values -1, 0, -1
-  for(int j = -1; j <= 1; j++) {
-    for(int i = -1; i <= 1; i++) {
-      if(i == 0 && j == 0) {
-        // Estamos en la celula en si
-        continue;
-      }
-      if(prevGen[i+cellx][j+celly] != 0) {
-        int xval = (cellx+i);
-        int yval = (celly+j);
-        TraceLog(LOG_DEBUG, "Alive x: %d, y: %d", xval, yval);
-        countAliveCells++;
-      }
-    }
-  }
-
-  // Check if the cell in cellx, celly is alive or dead.
-  // Apply rules based on that.
-  bool currCellAlive = prevGen[cellx][celly];
-  if (currCellAlive) {
-    if (countAliveCells < 2 || countAliveCells > 3) {
-      currGen[cellx][celly] = 0;
-    } else {
-      currGen[cellx][celly] = 1;
-    }
-  } else {
-    // Cell is dead, if exactly 3 cells alive around, reborn.
-    if (countAliveCells == 3) {
-      currGen[cellx][celly] = 1;
-    }
-  }
-  // Copy curr gen to prev gen so it will update every cycle.
-}*/
 void CheckCellLife(int cellx, int celly) {
   int countAliveCells = 0;
   for (int j = -1; j <= 1; j++) {
