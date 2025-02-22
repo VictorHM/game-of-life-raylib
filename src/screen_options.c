@@ -35,17 +35,13 @@
 //----------------------------------------------------------------------------------
 // Module Variables Definition (local)
 //----------------------------------------------------------------------------------
-static int framesCounter = 0;
-static int finishScreen = 0;
-static bool isInitCondition = false;
+int transitionToScreen = 0;
 
  int filePathCounter = 0;
  char *filePaths[MAX_FILEPATH_RECORDED] = { 0 }; // We will register a maximum of filepaths
 
 // Options Screen Initialization logic
-void InitOptionsScreen(void) { // TODO: Initialize OPTIONS screen variables here!
-    framesCounter = 0;
-    finishScreen = 0;
+void InitOptionsScreen(void) {
     // Allocate space for the required file path.
      for (int i = 0; i < MAX_FILEPATH_RECORDED; i++) {
        filePaths[i] = (char *)RL_CALLOC(MAX_FILEPATH_SIZE, 1);
@@ -90,21 +86,20 @@ void FilterFilesExt(void) {
 // Options Screen Update logic
 void UpdateOptionsScreen(void)
 {
+    transitionToScreen = 0;
     if (IsKeyPressed(KEY_ONE))
     {
+        // Cargar configuracion desde archivo
         FilterFilesExt();
-        // TODO load screen with the files found in the directory.
-        finishScreen = 1;
+        transitionToScreen = 1;
     } else if (IsKeyPressed(KEY_TWO)) {
-        finishScreen = 2;   // Opciones
-    //} else if (IsKeyPressed(KEY_THREE)) {
-    //    finishScreen = 3;
+        // Crear configuracion inicial
+        transitionToScreen = 2;
+    } else if (IsKeyPressed(KEY_THREE)) {
+        // Back to TITLE screen
+        transitionToScreen = 3;
     }
 
-}
-
-bool HasInitConditions (void) {
-  return isInitCondition;
 }
 
 // Options Screen Draw logic
@@ -112,12 +107,15 @@ void DrawOptionsScreen(void)
 {
     // TODO: Si esta en modo seleccion de .csv, no dibujar esto, sino un
     // recuadro donde cada linea sea uno de los .csv encontrados.
-    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), GRAY);
+    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), WHITE);
     Vector2 pos = { 50, 30 };
-    DrawTextEx(font, "CONWAY'S GAME OF LIFE", pos, font.baseSize*3.0f, 4, GREEN);
-    DrawText("1. CARGAR CONFIGURACION DESDE ARCHIVO", 120, 220, 15, GREEN); 
-    DrawText("2. CREAR CONFIGURACION INICIAL", 120, 250, 15, GREEN);
-    DrawText("3. VOLVER AL TITULO", 120, 250, 15, GREEN);
+    DrawTextEx(font, "CONWAY'S GAME OF LIFE", pos, font.baseSize * 4, 4, DARKGREEN);
+    pos.y = pos.y + 150;
+    DrawTextEx(font, "1. CARGAR CONFIGURACION DESDE ARCHIVO", pos, font.baseSize * 2, 2, GREEN);
+    pos.y = pos.y + 50;
+    DrawTextEx(font, "2. CREAR CONFIGURACION INICIAL", pos, font.baseSize * 2, 2, GREEN);
+    pos.y = pos.y + 50;
+    DrawTextEx(font, "3. VOLVER AL TITULO", pos, font.baseSize * 2, 2, GREEN);
 }
 
 // Options Screen Unload logic 
@@ -126,12 +124,12 @@ void UnloadOptionsScreen(void)
     // TODO: Unload OPTIONS screen variables here!
     for (int i = 0; i < MAX_FILEPATH_RECORDED; i++)
     {
-        TraceLog(LOG_DEBUG, "Liberando memoria de paths: %s", filePaths[i]);
+        //TraceLog(LOG_DEBUG, "Liberando memoria de paths: %s", filePaths[i]);
         RL_FREE(filePaths[i]); // Free allocated memory for all filepaths
     }
 }
 // Options Screen should finish?
 int FinishOptionsScreen(void)
 {
-    return finishScreen;
+    return transitionToScreen;
 }

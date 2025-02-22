@@ -67,7 +67,8 @@ int main(void)
     InitAudioDevice();      // Initialize audio device
 
     // Load global data (assets that must be available in all screens, i.e. font)
-    font = LoadFont("resources/Crang.ttf");
+    //font = LoadFont("resources/Crang.ttf");
+    font = LoadFont("resources/mecha.png");
     music = LoadMusicStream("resources/ambient.ogg");
     fxCoin = LoadSound("resources/coin.wav");
 
@@ -89,13 +90,18 @@ int main(void)
     {
         if (IsKeyPressed('P')) { 
           pause = !pause;
-          if(pause) {
+          if(pause && currentScreen == GAMEPLAY) {
             TraceLog(LOG_DEBUG, "Pausado");
+            // TODO PRINT on top of the screen the info it is paused.
             PauseMusicStream(music);
           } else {
             ResumeMusicStream(music);
             TraceLog(LOG_DEBUG, "Reanudado");
           }
+        }
+        if (IsKeyPressed('M') /* && currentScreen != LOGO */) {
+          soundVol = soundVol == 1.0f ? 0.0f : 1.0f;
+          SetMusicVolume(music, soundVol);
         }
         UpdateDrawFrame();
     }
@@ -257,9 +263,7 @@ static void UpdateDrawFrame(void)
             case OPTIONS:
             {
                 UpdateOptionsScreen();
-                int finishVal = FinishGameplayScreen();
-                //TraceLog(LOG_DEBUG, "Valor devuelto finish*Screen %d", finishVal);
-
+                //int finishVal = FinishGameplayScreen();
                 if (FinishOptionsScreen() == 3) TransitionToScreen(TITLE);
 
             } break;

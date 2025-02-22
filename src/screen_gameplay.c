@@ -51,13 +51,9 @@ static bool prevGen [CELL_NUMX][CELL_NUMY] = {0};
 // Gameplay Screen Initialization logic
 void InitGameplayScreen(void)
 {
-    //if (isLoaded) {
-    //  // TODO load the csv data here.
-    //}
     framesCounter = 0;
     finishScreen = 0;
     TraceLog(LOG_DEBUG, "INITIALIZE Generations");
-    bool prevVal = false;
 #ifdef TESTING
   for(int i = 0; i < CELL_NUMX; ++i) {
       for(int j = 0; j < CELL_NUMY; ++j) {
@@ -137,8 +133,6 @@ void UpdateGeneration() {
 
 // Update current generation life state from prev.
 int copyCurrGenToPrev() {
-  // Copy arrays to keep updated. Doing it in checkLifeCells breaks logic.
-  // TODO contar celulas vivas en cada iteraccion
   int aliveCells = 0;
   for (int i = 0; i < CELL_NUMX; ++i) {
     for (int j = 0; j < CELL_NUMY; ++j) {
@@ -158,13 +152,13 @@ void UpdateGameplayScreen(void)
         finishScreen = 1;
         PlaySound(fxCoin);
     }
-    //cicles++;
+    cicles++;
 
-    // TODO anadir lectura de input key para avanzar un ciclo, y asi poder ver que falla en la logica.
-    if (cicles >= 50 || IsKeyPressed(KEY_SPACE)) {
-      TraceLog(LOG_DEBUG, "Nuevo Ciclo.");
+    // Pressing SPACE advance 1 cicle of cells
+    // TODO for gameplay.
+    // User can press SPACE or wait 150 cicles to see the next generation.
+    if (cicles >= 100 || IsKeyPressed(KEY_SPACE)) {
       UpdateGeneration();
-      TraceLog(LOG_DEBUG, "Nuevo Ciclo: %d", cicles);
       cicles = 0;
     }
 }
@@ -174,14 +168,11 @@ void DrawGameplayScreen(void)
 {
     int posX = 0;
     int posY = 0;
-    // TODO this could be split in several parallel processing. Each row,
-    // each cell, is independent of any other at this point (the state has
-    // been already calculated).
     for (int i = 0; i < CELL_NUMX; i++) {
       for (int j = 0; j < CELL_NUMY; j++) {
         // Check if the cell has to be drawn.
         if (currGen[i][j]){
-          DrawRectangle(posX, posY, SIZE_X-delta, SIZE_Y-delta, GREEN); // TODO esto es lo que esta mal! Hay que moverse varios pixels y no lo hace bien
+          DrawRectangle(posX, posY, SIZE_X-delta, SIZE_Y-delta, GREEN);
         }
         DrawRectangleLines(posX, posY, SIZE_X, SIZE_Y, RED);
         posY += SIZE_Y;
