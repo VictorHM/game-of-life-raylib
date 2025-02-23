@@ -36,8 +36,8 @@
 static int framesCounter = 0;
 static int finishScreen = 0;
 
-static int xPos;
-static int yPos;
+static int xPos = 0;
+static int yPos = 0;
 
 static int cicles = 0;
 static int delta = 0.1f;
@@ -151,6 +151,24 @@ void UpdateGameplayScreen(void)
     {
         finishScreen = 1;
         PlaySound(fxCoin);
+    }
+    // TODO for red square. Consider using MouseKeyPress and related funtions
+    // to destroy the cell at that point, instead of using the red square.
+    if (IsKeyDown(KEY_LEFT))
+    {
+        xPos -= SIZE_X;
+    }
+    if (IsKeyDown(KEY_RIGHT))
+    {
+        xPos += SIZE_X;
+    }
+    if (IsKeyDown(KEY_UP))
+    {
+        yPos -= SIZE_Y;
+    }
+    if (IsKeyDown(KEY_DOWN))
+    {
+        yPos += SIZE_Y;
     }
     cicles++;
 
