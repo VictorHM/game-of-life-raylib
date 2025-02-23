@@ -39,6 +39,7 @@ static float transAlpha = 0.0f;
 static bool onTransition = false;
 static bool transFadeOut = false;
 static bool pause = false;
+static float soundVol = 1.0f;
 static int transFromScreen = -1;
 static GameScreen transToScreen = UNKNOWN;
 
@@ -70,7 +71,7 @@ int main(void)
     music = LoadMusicStream("resources/ambient.ogg");
     fxCoin = LoadSound("resources/coin.wav");
 
-    SetMusicVolume(music, 1.0f);
+    SetMusicVolume(music, soundVol);
     PlayMusicStream(music);
 
     // Setup and init first screen
@@ -88,7 +89,18 @@ int main(void)
     {
         if (IsKeyPressed('P')) { 
           pause = !pause;
-          TraceLog(LOG_DEBUG, "Pausa toggleada");
+          if(pause && currentScreen == GAMEPLAY) {
+            TraceLog(LOG_DEBUG, "Pausado");
+            // TODO PRINT on top of the screen the info it is paused.
+            PauseMusicStream(music);
+          } else {
+            ResumeMusicStream(music);
+            TraceLog(LOG_DEBUG, "Reanudado");
+          }
+        }
+        if (IsKeyPressed('M') /* && currentScreen != LOGO */) {
+          soundVol = soundVol == 1.0f ? 0.0f : 1.0f;
+          SetMusicVolume(music, soundVol);
         }
         UpdateDrawFrame();
     }
@@ -128,6 +140,7 @@ static void ChangeToScreen(GameScreen screen)
     // Unload current screen
     switch (currentScreen)
     {
+        
         case LOGO: UnloadLogoScreen(); break;
         case TITLE: UnloadTitleScreen(); break;
         case GAMEPLAY: UnloadGameplayScreen(); break;
@@ -138,6 +151,7 @@ static void ChangeToScreen(GameScreen screen)
     // Init next screen
     switch (screen)
     {
+        
         case LOGO: InitLogoScreen(); break;
         case TITLE: InitTitleScreen(); break;
         case GAMEPLAY: InitGameplayScreen(); break;
@@ -241,15 +255,14 @@ static void UpdateDrawFrame(void)
             {
                 UpdateTitleScreen();
 
-                if (FinishTitleScreen() == 1) TransitionToScreen(OPTIONS);
-                else if (FinishTitleScreen() == 2) TransitionToScreen(GAMEPLAY);
+                if (FinishTitleScreen() == 1) TransitionToScreen(GAMEPLAY);
+                else if (FinishTitleScreen() == 2) TransitionToScreen(OPTIONS);
 
             } break;
             case OPTIONS:
             {
                 UpdateOptionsScreen();
-
-                if (FinishOptionsScreen()) TransitionToScreen(TITLE);
+                if (FinishOptionsScreen() == 3) TransitionToScreen(TITLE);
 
             } break;
             case GAMEPLAY:
