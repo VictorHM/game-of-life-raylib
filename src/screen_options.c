@@ -92,11 +92,14 @@ void UpdateOptionsScreen(void)
         // Cargar configuracion desde archivo
         //FilterFilesExt();
         transitionToScreen = 1;
+        PlaySound(fxCoin);
     } else if (IsKeyPressed(KEY_TWO)) {
         transitionToScreen = 2;
+        PlaySound(fxCoin);
     } else if (IsKeyPressed(KEY_THREE)) {
         // Back to TITLE screen
         transitionToScreen = 3;
+        PlaySound(fxCoin);
     }
 
 }
@@ -111,11 +114,14 @@ void UpdateRulesScreen(void)
         // Cargar configuracion desde archivo
         //FilterFilesExt();
         transitionToScreen = 1;
+        PlaySound(fxCoin);
     } else if (IsKeyPressed(KEY_TWO)) {
         transitionToScreen = 2;
+        PlaySound(fxCoin);
     } else if (IsKeyPressed(KEY_THREE)) {
         // Back to TITLE screen
         transitionToScreen = 3;
+        PlaySound(fxCoin);
     }
 
 }
