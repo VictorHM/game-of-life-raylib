@@ -25,6 +25,7 @@
 
 #include "raylib.h"
 #include "screens.h"
+#include "includes/life_rules.h"
 #include <time.h>
 #include <stdlib.h>
 
@@ -105,13 +106,13 @@ void CheckCellLife(int cellx, int celly) {
 
   bool currCellAlive = prevGen[cellx][celly];
   if (currCellAlive) {
-      if (countAliveCells < 2 || countAliveCells > 3) {
+      if (countAliveCells < minSurvive || countAliveCells > maxSurvive) {
           currGen[cellx][celly] = 0;
       } else {
           currGen[cellx][celly] = 1;
       }
   } else {
-      if (countAliveCells == 3) {
+      if (countAliveCells >= minBorn && countAliveCells <= maxBorn) {
           currGen[cellx][celly] = 1;
       }
   }
@@ -198,7 +199,6 @@ void DrawGameplayScreen(void)
       posY = 0;
       posX += SIZE_X;
     }            
-    DrawRectangle(xPos, yPos, 2*SIZE_X, 2*SIZE_Y, RED);
 }
 
 // Gameplay Screen Unload logic

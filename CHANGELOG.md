@@ -24,6 +24,15 @@
 
 ## [0.1.0] - 2023-10-05
 
+### Major Features
+- [ x ] Implemented Selection of two set of rules in Options
+- [ x ] Deleted red user square. No clear use for now.
+
+### Minor Features
+
+### Bug fixes
+- [ x ] Fixed path to load resources to avoid missing sounds and character sets.
+
 ### Added
 - Initial release of Game of Life with basic functionality
 - Implemented user controls for starting, stopping, and resetting the simulation

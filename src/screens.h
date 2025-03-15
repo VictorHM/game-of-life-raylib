@@ -41,7 +41,7 @@
 //----------------------------------------------------------------------------------
 // Types and Structures Definition
 //----------------------------------------------------------------------------------
-typedef enum GameScreen { UNKNOWN = -1, LOGO = 0, TITLE, OPTIONS, GAMEPLAY, ENDING } GameScreen;
+typedef enum GameScreen { UNKNOWN = -1, LOGO = 0, TITLE, OPTIONS, RULES, GAMEPLAY, ENDING } GameScreen;
 
 //----------------------------------------------------------------------------------
 // Global Variables Declaration (shared by several modules)
@@ -78,6 +78,8 @@ int FinishTitleScreen(void);
 //----------------------------------------------------------------------------------
 void InitOptionsScreen(void);
 void UpdateOptionsScreen(void);
+void UpdateRulesScreen(void);
+void DrawRulesScreen(void);
 void DrawOptionsScreen(void);
 void UnloadOptionsScreen(void);
 int FinishOptionsScreen(void);
