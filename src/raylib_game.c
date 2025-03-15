@@ -67,9 +67,9 @@ int main(void)
     InitAudioDevice();      // Initialize audio device
 
     // Load global data (assets that must be available in all screens, i.e. font)
-    font = LoadFont("resources/mecha.png");
-    music = LoadMusicStream("resources/ambient.ogg");
-    fxCoin = LoadSound("resources/coin.wav");
+    font = LoadFont("./resources/mecha.png");
+    music = LoadMusicStream("./resources/ambient.ogg");
+    fxCoin = LoadSound("./resources/coin.wav");
 
     SetMusicVolume(music, soundVol);
     PlayMusicStream(music);
