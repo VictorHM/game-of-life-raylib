@@ -41,7 +41,6 @@ static int xPos = 0;
 static int yPos = 0;
 
 static int cicles = 0;
-static int delta = 0.1f;
 
 static bool currGen [MAX_CELL_X][MAX_CELL_Y] = {0};
 static bool prevGen [MAX_CELL_X][MAX_CELL_Y] = {0};
@@ -196,7 +195,7 @@ void DrawGameplayScreen(void)
       for (int j = 0; j < MAX_CELL_Y; j++) {
         // Check if the cell has to be drawn.
         if (currGen[i][j]){
-          DrawRectangle(posX, posY, CELL_WIDTH-delta, CELL_HEIGHT-delta, GREEN);
+          DrawRectangle(posX, posY, CELL_WIDTH, CELL_HEIGHT, GREEN);
         }
         DrawRectangleLines(posX, posY, CELL_WIDTH, CELL_HEIGHT, RED);
         posY += CELL_HEIGHT;
