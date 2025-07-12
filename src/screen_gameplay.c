@@ -37,9 +37,6 @@
 static int framesCounter = 0;
 static int finishScreen = 0;
 
-static int xPos = 0;
-static int yPos = 0;
-
 static int cicles = 0;
 
 static bool currGen [MAX_CELL_X][MAX_CELL_Y] = {0};
@@ -157,24 +154,6 @@ void UpdateGameplayScreen(void)
         finishScreen = 1;
         PlaySound(fxCoin);
     }
-    // TODO for red square. Consider using MouseKeyPress and related funtions
-    // to destroy the cell at that point, instead of using the red square.
-    if (IsKeyDown(KEY_LEFT))
-    {
-        xPos -= CELL_WIDTH;
-    }
-    if (IsKeyDown(KEY_RIGHT))
-    {
-        xPos += CELL_WIDTH;
-    }
-    if (IsKeyDown(KEY_UP))
-    {
-        yPos -= CELL_HEIGHT;
-    }
-    if (IsKeyDown(KEY_DOWN))
-    {
-        yPos += CELL_HEIGHT;
-    }
     cicles++;
 
     // Pressing SPACE advance 1 cicle of cells
@@ -189,8 +168,9 @@ void UpdateGameplayScreen(void)
 // Gameplay Screen Draw logic
 void DrawGameplayScreen(void)
 {
-    int posX = 0;
-    int posY = 0;
+    // TODO calculate the position we want to draw the grid.
+    int posX = 3 * CELL_WIDTH;
+    int posY = 2 * CELL_HEIGHT;
     for (int i = 0; i < MAX_CELL_X; i++) {
       for (int j = 0; j < MAX_CELL_Y; j++) {
         // Check if the cell has to be drawn.
@@ -200,7 +180,7 @@ void DrawGameplayScreen(void)
         DrawRectangleLines(posX, posY, CELL_WIDTH, CELL_HEIGHT, RED);
         posY += CELL_HEIGHT;
       }
-      posY = 0;
+      posY = 2 * CELL_HEIGHT;
       posX += CELL_WIDTH;
     }            
 }

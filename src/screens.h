@@ -32,8 +32,12 @@
 #define CELL_WIDTH 30
 #define CELL_HEIGHT 30
 
-#define MAX_CELL_X 800/CELL_WIDTH
-#define MAX_CELL_Y 450/CELL_HEIGHT
+//#define MAX_CELL_X 800/CELL_WIDTH
+//#define MAX_CELL_Y 450/CELL_HEIGHT
+// TODO this was calculated by trying to center the cells in a 1280x720 window
+// while maintaining cells size fixed to 30
+#define MAX_CELL_X 36
+#define MAX_CELL_Y 20
 
 //----------------------------------------------------------------------------------
 // Types and Structures Definition
