@@ -27,21 +27,22 @@
 #define SCREENS_H
 
 //----------------------------------------------------------------------------------
-// Some Custom Defines
+// Window and Cell sizes Defines
 //----------------------------------------------------------------------------------
-#define WIDTH 800
-#define HEIGHT 500
+#define CELL_WIDTH 30
+#define CELL_HEIGHT 30
 
-#define CELL_NUMX 50
-#define CELL_NUMY 30
-#define CELL_NUM  CELL_NUMX * CELL_NUMY
-#define SIZE_X WIDTH/CELL_NUMX
-#define SIZE_Y HEIGHT/CELL_NUMY
+//#define MAX_CELL_X 800/CELL_WIDTH
+//#define MAX_CELL_Y 450/CELL_HEIGHT
+// TODO this was calculated by trying to center the cells in a 1280x720 window
+// while maintaining cells size fixed to 30
+#define MAX_CELL_X 36
+#define MAX_CELL_Y 20
 
 //----------------------------------------------------------------------------------
 // Types and Structures Definition
 //----------------------------------------------------------------------------------
-typedef enum GameScreen { UNKNOWN = -1, LOGO = 0, TITLE, OPTIONS, GAMEPLAY, ENDING } GameScreen;
+typedef enum GameScreen { UNKNOWN = -1, LOGO = 0, TITLE, OPTIONS, RULES, GAMEPLAY, ENDING } GameScreen;
 
 //----------------------------------------------------------------------------------
 // Global Variables Declaration (shared by several modules)
@@ -78,6 +79,8 @@ int FinishTitleScreen(void);
 //----------------------------------------------------------------------------------
 void InitOptionsScreen(void);
 void UpdateOptionsScreen(void);
+void UpdateRulesScreen(void);
+void DrawRulesScreen(void);
 void DrawOptionsScreen(void);
 void UnloadOptionsScreen(void);
 int FinishOptionsScreen(void);

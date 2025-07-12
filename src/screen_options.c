@@ -90,14 +90,38 @@ void UpdateOptionsScreen(void)
     if (IsKeyPressed(KEY_ONE))
     {
         // Cargar configuracion desde archivo
-        FilterFilesExt();
+        //FilterFilesExt();
         transitionToScreen = 1;
+        PlaySound(fxCoin);
     } else if (IsKeyPressed(KEY_TWO)) {
-        // Crear configuracion inicial
         transitionToScreen = 2;
+        PlaySound(fxCoin);
     } else if (IsKeyPressed(KEY_THREE)) {
         // Back to TITLE screen
         transitionToScreen = 3;
+        PlaySound(fxCoin);
+    }
+
+}
+
+// Update rules screen. For now it does the same as the one
+// above, but better to duplicate it for when they change
+void UpdateRulesScreen(void)
+{
+    transitionToScreen = 0;
+    if (IsKeyPressed(KEY_ONE))
+    {
+        // Cargar configuracion desde archivo
+        //FilterFilesExt();
+        transitionToScreen = 1;
+        PlaySound(fxCoin);
+    } else if (IsKeyPressed(KEY_TWO)) {
+        transitionToScreen = 2;
+        PlaySound(fxCoin);
+    } else if (IsKeyPressed(KEY_THREE)) {
+        // Back to TITLE screen
+        transitionToScreen = 3;
+        PlaySound(fxCoin);
     }
 
 }
@@ -113,7 +137,20 @@ void DrawOptionsScreen(void)
     pos.y = pos.y + 150;
     DrawTextEx(font, "1. CARGAR CONFIGURACION DESDE ARCHIVO", pos, font.baseSize * 2, 2, GREEN);
     pos.y = pos.y + 50;
-    DrawTextEx(font, "2. CREAR CONFIGURACION INICIAL", pos, font.baseSize * 2, 2, GREEN);
+    DrawTextEx(font, "2. ELEGIR SET DE REGLAS", pos, font.baseSize * 2, 2, GREEN);
+    pos.y = pos.y + 50;
+    DrawTextEx(font, "3. VOLVER AL TITULO", pos, font.baseSize * 2, 2, GREEN);
+}
+
+// Selection of Rules
+void DrawRulesScreen(void) {
+    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), WHITE);
+    Vector2 pos = { 50, 30 };
+    DrawTextEx(font, "CONWAY'S GAME OF LIFE: Selecciona Reglas", pos, font.baseSize * 4, 4, DARKGREEN);
+    pos.y = pos.y + 150;
+    DrawTextEx(font, "1. Family Life: B3/S23 (Born if 3, Survive if 2 or 3)", pos, font.baseSize * 2, 2, GREEN);
+    pos.y = pos.y + 50;
+    DrawTextEx(font, "2. High Life: B36/S23", pos, font.baseSize * 2, 2, GREEN);
     pos.y = pos.y + 50;
     DrawTextEx(font, "3. VOLVER AL TITULO", pos, font.baseSize * 2, 2, GREEN);
 }

@@ -14,6 +14,7 @@
 
 #include "raylib.h"
 #include "screens.h"    // NOTE: Declares global (extern) variables and screens functions
+#include "includes/life_rules.h"
 
 #if defined(PLATFORM_WEB)
     #include <emscripten/emscripten.h>
@@ -31,8 +32,8 @@ Sound fxCoin = { 0 };
 //----------------------------------------------------------------------------------
 // Local Variables Definition (local to this module)
 //----------------------------------------------------------------------------------
-static const int screenWidth = WIDTH;
-static const int screenHeight = HEIGHT;
+static const int screenWidth = 1280;
+static const int screenHeight = 720;
 
 // Required variables to manage screen transitions (fade-in, fade-out)
 static float transAlpha = 0.0f;
@@ -262,7 +263,27 @@ static void UpdateDrawFrame(void)
             case OPTIONS:
             {
                 UpdateOptionsScreen();
+                if (FinishOptionsScreen() == 2) TransitionToScreen(RULES);
                 if (FinishOptionsScreen() == 3) TransitionToScreen(TITLE);
+
+            } break;
+            case RULES:
+            {
+                UpdateRulesScreen();
+                // Regular set of rules
+                if (FinishOptionsScreen() == 1) {
+                    minSurvive = 2;
+                    maxSurvive = 3;
+                    minBorn = 3;
+                    maxBorn = 3;
+                    TransitionToScreen(TITLE);
+                } else if (FinishOptionsScreen() == 2) {
+                    minSurvive = 2;
+                    maxSurvive = 3;
+                    minBorn = 6;
+                    maxBorn = 3;
+                    TransitionToScreen(TITLE);
+                }
 
             } break;
             case GAMEPLAY:
@@ -297,6 +318,7 @@ static void UpdateDrawFrame(void)
             case LOGO: DrawLogoScreen(); break;
             case TITLE: DrawTitleScreen(); break;
             case OPTIONS: DrawOptionsScreen(); break;
+            case RULES: DrawRulesScreen(); break;
             case GAMEPLAY: DrawGameplayScreen(); break;
             case ENDING: DrawEndingScreen(); break;
             default: break;
