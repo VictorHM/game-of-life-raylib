@@ -43,8 +43,8 @@ static int yPos = 0;
 static int cicles = 0;
 static int delta = 0.1f;
 
-static bool currGen [CELL_NUMX][CELL_NUMY] = {0};
-static bool prevGen [CELL_NUMX][CELL_NUMY] = {0};
+static bool currGen [MAX_CELL_X][MAX_CELL_Y] = {0};
+static bool prevGen [MAX_CELL_X][MAX_CELL_Y] = {0};
 //----------------------------------------------------------------------------------
 // Gameplay Screen Functions Definition
 //----------------------------------------------------------------------------------
@@ -56,8 +56,8 @@ void InitGameplayScreen(void)
     finishScreen = 0;
     TraceLog(LOG_DEBUG, "INITIALIZE Generations");
 #ifdef TESTING
-  for(int i = 0; i < CELL_NUMX; ++i) {
-      for(int j = 0; j < CELL_NUMY; ++j) {
+  for(int i = 0; i < MAX_CELL_X; ++i) {
+      for(int j = 0; j < MAX_CELL_Y; ++j) {
         currGen[i][j] = 0;
         prevGen[i][j] = 0;
       }
@@ -79,8 +79,8 @@ void InitGameplayScreen(void)
     // Initialize random number generator
     srand(time(NULL));
     // Initialize currGen
-    for(int i = 0; i < CELL_NUMX; ++i) {
-      for(int j = 0; j < CELL_NUMY; ++j) {
+    for(int i = 0; i < MAX_CELL_X; ++i) {
+      for(int j = 0; j < MAX_CELL_Y; ++j) {
         // generate random number in [0,1]
         currGen[i][j] = rand() % 2;
         prevGen[i][j] = rand() % 2;
@@ -98,7 +98,7 @@ void CheckCellLife(int cellx, int celly) {
           if (i == 0 && j == 0) continue;
           int x = cellx + i;
           int y = celly + j;
-          if (x >= 0 && x < CELL_NUMX && y >= 0 && y < CELL_NUMY) {
+          if (x >= 0 && x < MAX_CELL_X && y >= 0 && y < MAX_CELL_Y) {
               if (prevGen[x][y]) countAliveCells++;
           }
       }
@@ -119,14 +119,14 @@ void CheckCellLife(int cellx, int celly) {
 }
 
 void UpdateGeneration() {
-  for (int x = 0; x < CELL_NUMX; x++) {
-      for (int y = 0; y < CELL_NUMY; y++) {
+  for (int x = 0; x < MAX_CELL_X; x++) {
+      for (int y = 0; y < MAX_CELL_Y; y++) {
           CheckCellLife(x, y);
       }
   }
 
-  for (int x = 0; x < CELL_NUMX; x++) {
-      for (int y = 0; y < CELL_NUMY; y++) {
+  for (int x = 0; x < MAX_CELL_X; x++) {
+      for (int y = 0; y < MAX_CELL_Y; y++) {
           prevGen[x][y] = currGen[x][y];
       }
   }
@@ -135,8 +135,8 @@ void UpdateGeneration() {
 // Update current generation life state from prev.
 int copyCurrGenToPrev() {
   int aliveCells = 0;
-  for (int i = 0; i < CELL_NUMX; ++i) {
-    for (int j = 0; j < CELL_NUMY; ++j) {
+  for (int i = 0; i < MAX_CELL_X; ++i) {
+    for (int j = 0; j < MAX_CELL_Y; ++j) {
       if (currGen[i][j]) ++aliveCells;
       prevGen[i][j] = currGen[i][j];
     }
@@ -147,6 +147,11 @@ int copyCurrGenToPrev() {
 // Gameplay Screen Update logic
 void UpdateGameplayScreen(void)
 {
+    // Update sizes and positions based on window
+
+    // TODO move this to init or some better place.
+    // TODO Algorithm to try to estimate the right size for the drawing cells
+
     // Press enter or tap to change to ENDING screen
     if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
     {
@@ -157,19 +162,19 @@ void UpdateGameplayScreen(void)
     // to destroy the cell at that point, instead of using the red square.
     if (IsKeyDown(KEY_LEFT))
     {
-        xPos -= SIZE_X;
+        xPos -= CELL_WIDTH;
     }
     if (IsKeyDown(KEY_RIGHT))
     {
-        xPos += SIZE_X;
+        xPos += CELL_WIDTH;
     }
     if (IsKeyDown(KEY_UP))
     {
-        yPos -= SIZE_Y;
+        yPos -= CELL_HEIGHT;
     }
     if (IsKeyDown(KEY_DOWN))
     {
-        yPos += SIZE_Y;
+        yPos += CELL_HEIGHT;
     }
     cicles++;
 
@@ -187,17 +192,17 @@ void DrawGameplayScreen(void)
 {
     int posX = 0;
     int posY = 0;
-    for (int i = 0; i < CELL_NUMX; i++) {
-      for (int j = 0; j < CELL_NUMY; j++) {
+    for (int i = 0; i < MAX_CELL_X; i++) {
+      for (int j = 0; j < MAX_CELL_Y; j++) {
         // Check if the cell has to be drawn.
         if (currGen[i][j]){
-          DrawRectangle(posX, posY, SIZE_X-delta, SIZE_Y-delta, GREEN);
+          DrawRectangle(posX, posY, CELL_WIDTH-delta, CELL_HEIGHT-delta, GREEN);
         }
-        DrawRectangleLines(posX, posY, SIZE_X, SIZE_Y, RED);
-        posY += SIZE_Y;
+        DrawRectangleLines(posX, posY, CELL_WIDTH, CELL_HEIGHT, RED);
+        posY += CELL_HEIGHT;
       }
       posY = 0;
-      posX += SIZE_X;
+      posX += CELL_WIDTH;
     }            
 }
 

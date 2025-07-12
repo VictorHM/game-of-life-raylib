@@ -27,16 +27,13 @@
 #define SCREENS_H
 
 //----------------------------------------------------------------------------------
-// Some Custom Defines
+// Window and Cell sizes Defines
 //----------------------------------------------------------------------------------
-#define WIDTH 800
-#define HEIGHT 500
+#define CELL_WIDTH 30
+#define CELL_HEIGHT 30
 
-#define CELL_NUMX 50
-#define CELL_NUMY 30
-#define CELL_NUM  CELL_NUMX * CELL_NUMY
-#define SIZE_X WIDTH/CELL_NUMX
-#define SIZE_Y HEIGHT/CELL_NUMY
+#define MAX_CELL_X 800/CELL_WIDTH
+#define MAX_CELL_Y 450/CELL_HEIGHT
 
 //----------------------------------------------------------------------------------
 // Types and Structures Definition
