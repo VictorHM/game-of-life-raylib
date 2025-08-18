@@ -63,6 +63,7 @@ int main(void)
     SetTraceLogLevel(LOG_DEBUG);
     // Initialization
     //---------------------------------------------------------
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(screenWidth, screenHeight, "Game of Life with Raylib");
 
     InitAudioDevice();      // Initialize audio device
