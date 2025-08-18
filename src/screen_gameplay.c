@@ -168,21 +168,34 @@ void UpdateGameplayScreen(void)
 // Gameplay Screen Draw logic
 void DrawGameplayScreen(void)
 {
-    // TODO calculate the position we want to draw the grid.
-    int posX = 3 * CELL_WIDTH;
-    int posY = 2 * CELL_HEIGHT;
-    for (int i = 0; i < MAX_CELL_X; i++) {
-      for (int j = 0; j < MAX_CELL_Y; j++) {
-        // Check if the cell has to be drawn.
-        if (currGen[i][j]){
-          DrawRectangle(posX, posY, CELL_WIDTH, CELL_HEIGHT, GREEN);
+    // Calculamos el tamaño de las celdas y la posición de la cuadrícula
+    int screenW = GetScreenWidth();
+    int screenH = GetScreenHeight();
+    int cellW   = screenW / MAX_CELL_X;
+    int cellH   = screenH / MAX_CELL_Y;
+    int cellSize = (cellW < cellH) ? cellW : cellH;
+
+    // Si la ventana es demasiado pequeña, no dibujar nada
+    if (cellSize <= 0) return;
+
+    int gridWidth  = cellSize * MAX_CELL_X;
+    int gridHeight = cellSize * MAX_CELL_Y;
+
+    // Centramos la cuadrícula en la ventana
+    int posX = (screenW - gridWidth) / 2;
+    int posY = (screenH - gridHeight) / 2;
+
+    for (int x = 0; x < MAX_CELL_X; x++) {
+        for (int y = 0; y < MAX_CELL_Y; y++) {
+            int drawX = posX + x * cellSize;
+            int drawY = posY + y * cellSize;
+
+            if (currGen[x][y]) {
+                DrawRectangle(drawX, drawY, cellSize, cellSize, GREEN);
+            }
+            DrawRectangleLines(drawX, drawY, cellSize, cellSize, RED);
         }
-        DrawRectangleLines(posX, posY, CELL_WIDTH, CELL_HEIGHT, RED);
-        posY += CELL_HEIGHT;
-      }
-      posY = 2 * CELL_HEIGHT;
-      posX += CELL_WIDTH;
-    }            
+    }
 }
 
 // Gameplay Screen Unload logic
